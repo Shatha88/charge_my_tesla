@@ -34,14 +34,13 @@ class OrderModel {
       "date": date,
       "price": price,
       "status": status,
-      "providerID": providerID,
-      "customerID": customerID,
+      "id_prov": providerID,
+      "id_cons": customerID,
     };
 
     if (id == null) {
       return jsonMap;
     }
-
     return {"id": id, ...jsonMap};
   }
 }
