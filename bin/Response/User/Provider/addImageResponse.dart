@@ -13,11 +13,11 @@ addImageResponse(Request req) async {
   final userInfo = JWT.decode(req.headers["authorization"]!);
   final image = await createImage(byte: byte);
   final hasImage = await checkImageProfile(idAuth: userInfo.payload["sub"]);
-  final userID = await getIDUser(idAuth: userInfo.payload["sub"]);
+  final provID = await getIDUser(idAuth: userInfo.payload["sub"]);
   final url = await uploadImage(
       file: image, found: hasImage, id: userInfo.payload["sub"]);
   await image.delete();
-  await sendURL(idUser: userID, url: url);
+  await sendURL(provID: provID, url: url);
 
   return Response.ok("upload done");
 }
@@ -38,7 +38,7 @@ checkImageProfile({required String idAuth}) async {
   final listImage = await SupabaseEnv()
       .supabase
       .storage
-      .from("imageProfile")
+      .from("image_stations")
       .list(path: "images");
   for (var element in listImage) {
     print(element.name);
@@ -59,7 +59,7 @@ uploadImage({
   required File file,
   required String id,
 }) async {
-  final supabase = SupabaseEnv().supabase.storage.from("imageProfile");
+  final supabase = SupabaseEnv().supabase.storage.from("image_stations");
   if (found) {
     await supabase.update('images/$id.png', file);
   } else {
@@ -76,7 +76,7 @@ getIDUser({required String idAuth}) async {
   final supabase = SupabaseEnv().supabase;
 
   final userID = (await supabase
-      .from("users")
+      .from("providers")
       .select("id")
       .eq("id_auth", idAuth))[0]["id"];
   print("-----getIDUser---");
@@ -85,11 +85,10 @@ getIDUser({required String idAuth}) async {
 }
 
 //send url to table image in database
+sendURL({required int provID, required String url}) async {
+  final supabase = SupabaseEnv().supabase.from("stations");
 
-sendURL({required int idUser, required String url}) async {
-  final supabase = SupabaseEnv().supabase.from("image");
-
-  final result = await supabase.upsert({"id": idUser, "urlimage": url});
+  final result = await supabase.upsert({"id_prov": provID, "image_url": url});
   print("-----sendURL---");
 
   return result;
@@ -101,9 +100,8 @@ deleteImageProfile({required String imageName}) async {
   await SupabaseEnv()
       .supabase
       .storage
-      .from("imageProfile")
+      .from("image_stations")
       .remove(["images/$imageName"]);
 
   return false;
 }
-
