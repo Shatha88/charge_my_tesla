@@ -13,14 +13,12 @@ viewNearbyStationResponse(Request req, String address) async {
     final jwt = JWT.decode(req.headers["authorization"]!);
     final userAuth = jwt.payload["sub"];
     final supabase = SupabaseEnv().supabase;
-    final result = await supabase
-        .from("consumers")
-        .select("address")
-        .eq("id_auth", userAuth);
+    final result =
+        await supabase.from("consumers").select().eq("id_auth", userAuth);
     final resultStation = await supabase
         .from("stations")
         .select("location,rating")
-        .contains("locations", result[0]["address"]);
+        .contains("location", address);
     if (resultStation.toString().isEmpty) {
       return CustomResponse().errorResponse(msg: 'There is no Stations nearby');
     }

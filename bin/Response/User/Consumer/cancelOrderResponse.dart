@@ -16,13 +16,15 @@ cancelOrderResponse(Request req, String id) async {
         .select("id")
         .eq("id_auth", jwt.payload['sub']);
 
-    await supaBase
-        .from("oreders")
+    final canceled = await supaBase
+        .from("orders")
         .delete()
         .eq("id_cons", orderList[0]["id"])
-        .eq("id", int.parse(id));
+        .eq("id", int.parse(id))
+        .select();
 
-    return CustomResponse().successResponse(msg: 'order has been cancled');
+    return CustomResponse()
+        .successResponse(msg: 'order has been canceled', data: canceled);
   } catch (error) {
     return CustomResponse().errorResponse(msg: error.toString());
   }

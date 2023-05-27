@@ -14,11 +14,11 @@ viewOrderResponse(Request req) async {
     final userAuth = jwt.payload["sub"];
     final supabase = SupabaseEnv().supabase;
     final result =
-        await supabase.from("consumers").select("id").eq("id_cons", userAuth);
+        await supabase.from("consumers").select("id").eq("id_auth", userAuth);
 
     final resultOrder = await supabase
-        .from("oreders")
-        .select("*")
+        .from("orders")
+        .select()
         .eq("id_cons", result[0]["id"]);
 
     return Response.ok(

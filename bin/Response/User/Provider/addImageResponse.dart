@@ -1,7 +1,6 @@
 // ignore_for_file: file_names
 
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:shelf/shelf.dart';
@@ -11,7 +10,7 @@ import '../../../Services/Supabase/supabaseEnv.dart';
 addImageResponse(Request req) async {
   final byte = await req.read().expand((element) => element).toList();
   final userInfo = JWT.decode(req.headers["authorization"]!);
-  final image = await createImage(byte: byte);
+  final image = await createImage(byte: byte, id: userInfo.payload["sub"]);
   final hasImage = await checkImageProfile(idAuth: userInfo.payload["sub"]);
   final provID = await getIDUser(idAuth: userInfo.payload["sub"]);
   final url = await uploadImage(
@@ -23,11 +22,12 @@ addImageResponse(Request req) async {
 }
 
 //create image inside project directory then return file
-Future<File> createImage({required List<int> byte}) async {
+Future<File> createImage({required List<int> byte, required String id}) async {
   // Create a new directory, recursively creating non-existent directories.
-  Directory.fromRawPath("bin/image/test.png" as Uint8List)
-      .createSync(recursive: true);
-  final file = File("bin/image/test.png");
+  // Directory.fromRawPath("bin/image/$id.png" as Uint8List)
+  //     .createSync(recursive: true);
+  File("bin/images/$id.png").createSync(recursive: true);
+  final file = File("bin/images/$id.png");
   await file.writeAsBytes(byte);
 
   return file;
@@ -38,7 +38,7 @@ checkImageProfile({required String idAuth}) async {
   final listImage = await SupabaseEnv()
       .supabase
       .storage
-      .from("image_stations")
+      .from("Image_stations")
       .list(path: "images");
   for (var element in listImage) {
     print(element.name);
@@ -59,7 +59,7 @@ uploadImage({
   required File file,
   required String id,
 }) async {
-  final supabase = SupabaseEnv().supabase.storage.from("image_stations");
+  final supabase = SupabaseEnv().supabase.storage.from("Image_stations");
   if (found) {
     await supabase.update('images/$id.png', file);
   } else {
@@ -100,7 +100,7 @@ deleteImageProfile({required String imageName}) async {
   await SupabaseEnv()
       .supabase
       .storage
-      .from("image_stations")
+      .from("Image_stations")
       .remove(["images/$imageName"]);
 
   return false;

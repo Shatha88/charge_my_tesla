@@ -21,13 +21,13 @@ placeOrderResponse(Request req, String idProv) async {
         .eq("id_auth", jwt.payload["sub"]);
 
     final iduser = result[0]["id"];
-    
+
     // Add order
     await supabase
-        .from("oreders")
+        .from("orders")
         .insert({"id_cons": iduser, "id_prov": idProv, ...body});
 
-    return CustomResponse().successResponse(msg: '');
+    return CustomResponse().successResponse(msg: 'order placed', data: body);
   } catch (error) {
     return CustomResponse().errorResponse(msg: error.toString());
   }
