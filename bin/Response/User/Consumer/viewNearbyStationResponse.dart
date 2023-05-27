@@ -1,7 +1,34 @@
 // ignore_for_file: file_names
 
+import 'dart:convert';
+
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:shelf/shelf.dart';
 
-viewNearbyStationResponse(Request _) {
-  return Response.ok('viewNearbyStationResponse');
+import '../../../RespnseMsg/CustomResponse.dart';
+import '../../../Services/Supabase/supabaseEnv.dart';
+
+viewNearbyStationResponse(Request req, String address) async {
+  try {
+    final jwt = JWT.decode(req.headers["authorization"]!);
+    final userAuth = jwt.payload["sub"];
+    final supabase = SupabaseEnv().supabase;
+    final result = await supabase
+        .from("consumers")
+        .select("address")
+        .eq("id_auth", userAuth);
+    final resultStation = await supabase
+        .from("stations")
+        .select("location,rating")
+        .contains("locations", result[0]["address"]);
+    if (resultStation.toString().isEmpty) {
+      return CustomResponse().errorResponse(msg: 'There is no Stations nearby');
+    }
+    return Response.ok(
+      json.encode(resultStation),
+      headers: {"content-type": "application/json"},
+    );
+  } catch (error) {
+    return CustomResponse().errorResponse(msg: error.toString());
+  }
 }

@@ -1,7 +1,29 @@
 // ignore_for_file: file_names
 
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:shelf/shelf.dart';
 
-cancelOrderResponse(Request _) {
-  return Response.ok('cancelOrderResponse');
+import '../../../RespnseMsg/CustomResponse.dart';
+import '../../../Services/Supabase/supabaseEnv.dart';
+
+cancelOrderResponse(Request req, String id) async {
+  try {
+    final jwt = JWT.decode(req.headers['authorization']!);
+
+    final supaBase = SupabaseEnv().supabase;
+    final orderList = await supaBase
+        .from("consumers")
+        .select("id")
+        .eq("id_auth", jwt.payload['sub']);
+
+    await supaBase
+        .from("oreders")
+        .delete()
+        .eq("id_cons", orderList[0]["id"])
+        .eq("id", int.parse(id));
+
+    return CustomResponse().successResponse(msg: 'order has been cancled');
+  } catch (error) {
+    return CustomResponse().errorResponse(msg: error.toString());
+  }
 }

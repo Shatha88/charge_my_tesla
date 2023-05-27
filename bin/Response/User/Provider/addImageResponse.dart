@@ -1,11 +1,12 @@
 // ignore_for_file: file_names
 
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:shelf/shelf.dart';
 
-import '../../Services/Supabase/supabaseEnv.dart';
+import '../../../Services/Supabase/supabaseEnv.dart';
 
 addImageResponse(Request req) async {
   final byte = await req.read().expand((element) => element).toList();
@@ -23,6 +24,9 @@ addImageResponse(Request req) async {
 
 //create image inside project directory then return file
 Future<File> createImage({required List<int> byte}) async {
+  // Create a new directory, recursively creating non-existent directories.
+  Directory.fromRawPath("bin/image/test.png" as Uint8List)
+      .createSync(recursive: true);
   final file = File("bin/image/test.png");
   await file.writeAsBytes(byte);
 
@@ -30,7 +34,6 @@ Future<File> createImage({required List<int> byte}) async {
 }
 
 //check if user has image in supabase storage then return boolean
-
 checkImageProfile({required String idAuth}) async {
   final listImage = await SupabaseEnv()
       .supabase
@@ -103,3 +106,4 @@ deleteImageProfile({required String imageName}) async {
 
   return false;
 }
+
