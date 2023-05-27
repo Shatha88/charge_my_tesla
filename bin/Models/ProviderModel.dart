@@ -24,7 +24,7 @@ class ProviderModel {
         name: json['name'],
         phone: json["phone"],
         address: json["address"],
-        bankAccount: json["bankAccount"],
+        bankAccount: json["bank_account"],
         email: json['email'],
         idAuth: json['id_auth']);
   }
@@ -34,7 +34,7 @@ class ProviderModel {
       "name": name ?? 'Guest',
       "phone": phone,
       "address": address,
-      "bankAccount": bankAccount,
+      "bank_account": bankAccount,
       "email": email,
       "id_auth": idAuth,
     };
