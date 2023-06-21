@@ -23,7 +23,7 @@ changePasswordResponse(Request req) async {
     );
 
     if (user.session?.accessToken == null) {
-      return Response.forbidden("i cant update password");
+      return Response.forbidden("faild to update password");
     }
 
     await auth.updateUser(

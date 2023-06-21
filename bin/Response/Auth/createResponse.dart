@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, prefer_interpolation_to_compose_strings
 
 import 'dart:convert';
 
@@ -14,18 +14,19 @@ createResponse(Request req) async {
   try {
     final body = json.decode(await req.readAsString());
     print(body);
-
-    if (req.headers['User-Type']!.toUpperCase() != 'CONSUMER' &&
-        req.headers['User-Type']!.toUpperCase() != 'PROVIDER') {
+    print('headers:' + req.headers.toString());
+    if (req.headers['user-type']!.toUpperCase() != 'CONSUMER' &&
+        req.headers['user-type']!.toUpperCase() != 'PROVIDER') {
       return CustomResponse().errorResponse(
         msg: "undefined user",
       );
     }
 
-    if (req.headers['User-Type']!.toUpperCase() == 'CONSUMER') {
-      if (!body.containsKey('bank_account') &&
-          !body.containsKey('email') &&
-          !body.containsKey('password')) {
+    if (req.headers['user-type']!.toUpperCase() == 'CONSUMER') {
+      print('consumer');
+      if (
+          // !body.containsKey('bank_account') &&
+          !body.containsKey('email') && !body.containsKey('password')) {
         return CustomResponse().errorResponse(
           msg: "missing required information",
         );
@@ -51,11 +52,13 @@ createResponse(Request req) async {
       );
     }
 
-    if (req.headers['User-Type']!.toUpperCase() == 'PROVIDER') {
-      if (!body.containsKey('bank_account') &&
+    if (req.headers['user-type']!.toUpperCase() == 'PROVIDER') {
+      print('provider');
+      if (
+          // !body.containsKey('bank_account') &&
           !body.containsKey('email') &&
-          !body.containsKey('address') &&
-          !body.containsKey('password')) {
+              // !body.containsKey('address') &&
+              !body.containsKey('password')) {
         return CustomResponse().errorResponse(
           msg: "missing required information",
         );
@@ -81,6 +84,7 @@ createResponse(Request req) async {
       );
     }
   } catch (error) {
+    print(error.toString());
     return CustomResponse().errorResponse(
       msg: error.toString(),
     );

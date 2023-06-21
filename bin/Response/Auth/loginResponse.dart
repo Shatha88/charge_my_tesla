@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 
 import 'dart:convert';
+// import 'dart:js_interop';
 
 import 'package:shelf/shelf.dart';
 
@@ -19,11 +20,25 @@ loginResponse(Request req) async {
       password: body["password"],
     );
 
+    String userType = "CONSUMER";
+    final supabase = SupabaseEnv().supabase;
+    List result =
+        await supabase.from("providers").select().eq("email", body['email']);
+
+    final List iduser = result;
+    if (iduser.isNotEmpty) {
+      userType = "PROVIDER";
+    } else {
+      result =
+          await supabase.from("consumers").select().eq("email", body['email']);
+    }
     // return Response.ok(userLogin.session?.accessToken.toString());
-    return CustomResponse().successResponse(
-        msg: "success",
-        data: {"token": userLogin.session?.accessToken.toString()});
+    return CustomResponse().successResponse(msg: "success", data: {
+      "token": userLogin.session?.accessToken.toString(),
+      'UserType': userType,
+      'profile': result,
+    });
   } catch (error) {
-    return Response.badRequest();
+    return CustomResponse().errorResponse(msg: error.toString());
   }
 }

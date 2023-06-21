@@ -13,7 +13,7 @@ resetPasswordResponse(Request req) async {
 
     if (body['email'] == null) {
       return Response.badRequest(
-        body: json.encode({"msg": "restPasswordResponse"}),
+        body: json.encode({"msg": "missing email"}),
         headers: {'content-type': 'application/json'},
       );
     }

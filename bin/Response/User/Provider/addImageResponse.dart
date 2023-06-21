@@ -88,7 +88,8 @@ getIDUser({required String idAuth}) async {
 sendURL({required int provID, required String url}) async {
   final supabase = SupabaseEnv().supabase.from("stations");
 
-  final result = await supabase.upsert({"id_prov": provID, "image_url": url}).eq('id_prov', provID);
+  final result = await supabase
+      .upsert({"id_prov": provID, "image_url": url}).eq('id_prov', provID);
   print("-----sendURL---");
 
   return result;

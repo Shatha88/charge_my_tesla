@@ -21,10 +21,13 @@ manageStationResponse(Request req) async {
 
   final idprov = result[0]["id"];
 
-  //update work time and status station
+  await supabase.from("stations").update(
+      {"id_prov": idprov, "price": body['price']}).eq("id_prov", idprov);
+
   await supabase
-      .from("stations")
-      .update({"id_prov": idprov, ...body}).eq("id_prov", idprov);
+      .from("station_time")
+      .upsert({"station_id": body['station_id'], "from": body["from"],"to":body["to"]}).eq(
+          "station_id", body['station_id']);
 
   return Response.ok(
       "The station's working time and station status have been added successfully");

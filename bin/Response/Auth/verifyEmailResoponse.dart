@@ -17,8 +17,8 @@ verificationEmail(Request req) async {
           email: body['email'],
         );
 
-    return CustomResponse().successResponse(msg: "email is confirm");
+    return CustomResponse().successResponse(msg: "email is confirmed");
   } catch (error) {
-    return CustomResponse().errorResponse(msg: "email not confirm");
+    return CustomResponse().errorResponse(msg: "email not confirmed");
   }
 }

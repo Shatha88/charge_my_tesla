@@ -17,7 +17,7 @@ class ConsumerRoute {
       ..delete("/cancel_order/<id>", cancelOrderResponse)
       ..post('/place_order/<idProv>', placeOrderResponse)//place order of provider
       ..get("/view_orders", viewOrderResponse)
-      ..get('/view_stations/<address>', viewNearbyStationResponse);
+      ..get('/view_stations_nearby/', viewNearbyStationResponse);
     final pipline =
         Pipeline().addMiddleware(checkTokenMiddleware()).addHandler(router);
 
